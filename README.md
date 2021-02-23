@@ -1,5 +1,5 @@
 ﻿# SocialApis(α)
-[Liberfy](https://github.com/atst1996/Liberfy)で複数のWebAPIへ接続することを目的に開発している.NET Framework向けのライブラリです。
+[Liberfy](https://github.com/atst1996/Liberfy)で複数のWebAPIへ接続することを目的に開発しています。  
 
 ### 対応サービス
 以下の一部のAPIに対応しています。
@@ -7,7 +7,7 @@
 - [Mastodon](https://github.com/tootsuite)
 
 ### ライセンス
-[Liberfy - MIT License](https://github.com/atst1996/Liberfy/blob/master/LICENSE)
+[SocialApis - MIT License](https://github.com/atst1996/Liberfy.SocialApis/blob/master/LICENSE)
 
 ---
 
