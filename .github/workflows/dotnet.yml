@@ -1,4 +1,4 @@
-name: Release JapaniseTextClassifier
+name: Release SocialApis
 
 on:
   push:
