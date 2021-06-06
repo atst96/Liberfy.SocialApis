@@ -1,0 +1,25 @@
+name: Release package
+
+on:
+  release:
+    types: [created]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
+    steps:
+    - uses: actions/checkout@v1
+    - uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: '3.0.x'
+        source-url: ${{ secrets.NUGET_REPOSITORY_URL }}
+      env:
+        NUGET_AUTH_TOKEN: ${{ secrets.NUGET_PUSH_KEY }}
+    - run: dotnet build --configuration Release SocialApis
+    - name: Create package
+      run: dotnet pack --configuration Release SocialApis
+    -name: Publish package
+    - run: dotnet nuget push SocialApis/bin/Release/SocialApis.*.nupkg
