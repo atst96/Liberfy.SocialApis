@@ -1,0 +1,16 @@
+{
+	"id": 6253282,
+	"id_str": "6253282",
+	"name": "Twitter API",
+	"screen_name": "TwitterAPI",
+	"created_at": "Wed May 23 06:01:13 +0000 2007",
+	"protected": false,
+	"verified": false,
+	"followers_count": 0,
+	"friends_count": 0,
+	"listed_count": 0,
+	"favourites_count": 0,
+	"statuses_count": 0,
+	"default_profile": true,
+	"default_profile_image": true
+}
