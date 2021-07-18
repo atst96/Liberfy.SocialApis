@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Runtime.Serialization;
 using Utf8Json;
 using System.Linq;
+using SocialApis.Formatters;
 
 namespace SocialApis.Twitter
 {
@@ -11,7 +12,7 @@ namespace SocialApis.Twitter
     public class Status
     {
         [DataMember(Name = "created_at")]
-        [JsonFormatter(typeof(TwitterTimeFormatFormatter))]
+        [JsonFormatter(typeof(TwitterDateTimeFormatter))]
         public DateTimeOffset CreatedAt { get; set; }
 
         [DataMember(Name = "id")]

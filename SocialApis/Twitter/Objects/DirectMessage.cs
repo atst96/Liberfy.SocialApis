@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SocialApis.Formatters;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
@@ -11,7 +12,7 @@ namespace SocialApis.Twitter
     public class DirectMessage
     {
         [DataMember(Name = "created_at")]
-        [Utf8Json.JsonFormatter(typeof(TwitterTimeFormatFormatter))]
+        [Utf8Json.JsonFormatter(typeof(TwitterDateTimeFormatter))]
         public DateTimeOffset CreatedAt { get; set; }
 
         [DataMember(Name = "entities")]

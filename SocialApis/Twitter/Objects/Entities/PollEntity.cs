@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SocialApis.Formatters;
+using System;
 using System.Runtime.Serialization;
 using Utf8Json;
 
@@ -11,7 +12,7 @@ namespace SocialApis.Twitter
         public PollOption Options { get; set; }
 
         [DataMember(Name = "end_datetime")]
-        [JsonFormatter(typeof(TwitterTimeFormatFormatter))]
+        [JsonFormatter(typeof(TwitterDateTimeFormatter))]
         public DateTimeOffset EndDateTime { get; set; }
 
         [DataMember(Name = "duration_minutes")]

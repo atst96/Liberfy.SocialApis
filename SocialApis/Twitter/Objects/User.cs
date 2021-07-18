@@ -51,7 +51,7 @@ namespace SocialApis.Twitter
 
         [DataMember(Name = "created_at")]
         [JsonFormatter(typeof(TwitterDateTimeFormatter))]
-        public DateTimeOffset? CreatedAt { get; set; }
+        public DateTimeOffset CreatedAt { get; set; }
 
         [DataMember(Name = "profile_banner_url")]
         public string ProfileBannerUrl { get; set; }
