@@ -6,20 +6,31 @@ on:
       - 'release/*'
 
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
     permissions:
       packages: write
       contents: read
     steps:
-    - uses: actions/checkout@v1
-    - uses: actions/setup-dotnet@v1
+    - uses: actions/checkout@v2
+    - name: Setup dotnet
+      uses: actions/setup-dotnet@v1
       with:
         dotnet-version: '5.0.x'
         source-url: ${{ secrets.NUGET_REPOSITORY_URL }}
       env:
         NUGET_AUTH_TOKEN: ${{ secrets.NUGET_PUSH_KEY }}
-    - run: dotnet build --configuration Release SocialApis
+    - name: Resolve dependencies
+      run: dotnet restore
+    - name: Run test
+      run: dotnet --logger trx --result-directory "TestResults"
+    - name: Upload test results
+      run: actions/upload-artifact@v2
+      with:
+        name: dotnet-results-net5
+        path: Test-Results
+    - name: Build package
+      run: dotnet build --configuration Release SocialApis
     - name: Create package
       run: dotnet pack --configuration Release SocialApis
     - name: Publish package
