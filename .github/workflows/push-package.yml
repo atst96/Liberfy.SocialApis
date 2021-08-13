@@ -3,7 +3,7 @@ name: Publish
 on:
   push:
     tags:
-      - 'release/*'
+      - 'v*'
 
 jobs:
   build:
@@ -22,14 +22,6 @@ jobs:
         NUGET_AUTH_TOKEN: ${{ secrets.NUGET_PUSH_KEY }}
     - name: Resolve dependencies
       run: dotnet restore
-    - name: Run test
-      run: dotnet --logger trx --result-directory "TestResults"
-    - name: Upload test results
-      run: actions/upload-artifact@v2
-      with:
-        name: dotnet-results-net5
-        path: TestResults
-      if: ${{ always() }}
     - name: Build package
       run: dotnet build --configuration Release SocialApis
     - name: Create package
