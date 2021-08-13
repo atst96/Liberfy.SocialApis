@@ -14,13 +14,13 @@ namespace SocialApis.Core
         bool IsConnecting { get; }
 
         /// <summary>
-        /// WebSocket通信を開始する。
+        /// 接続を開始する。
         /// </summary>
         /// <returns></returns>
         Task Connect();
 
         /// <summary>
-        /// WebSocket通信を閉じる。
+        /// 接続を閉じる。
         /// </summary>
         /// <returns></returns>
         Task Close();

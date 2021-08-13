@@ -9,7 +9,7 @@ namespace SocialApis.Core
 {
     /// <summary>
     /// </summary>
-    internal static class WebFactory
+    public static class WebFactory
     {
 #if ALLOW_INVALID_SSL_CERT
         /// <summary>
@@ -18,8 +18,11 @@ namespace SocialApis.Core
         /// <returns></returns>
         public static HttpClient CreateHttpClient()
         {
-            var clientHandler = new HttpClientHandler();
-            clientHandler.ServerCertificateCustomValidationCallback = ValidateServerCertificateSV;
+            var clientHandler = new HttpClientHandler
+            {
+                ServerCertificateCustomValidationCallback = ValidateServerCertificateSV
+            };
+
             return new HttpClient(clientHandler);
         }
         private static bool ValidateServerCertificateSV(HttpRequestMessage arg1, X509Certificate2 arg2, X509Chain arg3, SslPolicyErrors arg4) => true;
