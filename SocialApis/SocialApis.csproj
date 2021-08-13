@@ -16,7 +16,7 @@
     <Authors>atst_96</Authors>
     <Company></Company>
     <Version>0.0.2</Version>
-    <PackageLicenseFile>C:\Users\Shota\source\repos\Liberfy.SocialApis\LICENSE</PackageLicenseFile>
+    <PackageLicenseFile>../LICENSE</PackageLicenseFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
