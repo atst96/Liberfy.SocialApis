@@ -1,6 +1,6 @@
 ﻿# SocialApis(α)
-[![Test](https://github.com/atst1996/Liberfy.SocialApis/actions/workflows/test-package.yml/badge.svg?branch=master)](https://github.com/atst1996/Liberfy.SocialApis/actions/workflows/test-package.yml)
-[![Publish](https://github.com/atst1996/Liberfy.SocialApis/actions/workflows/push-package.yml/badge.svg?branch=master)](https://github.com/atst1996/Liberfy.SocialApis/actions/workflows/push-package.yml)
+[![Test](https://github.com/atst1996/Liberfy.SocialApis/actions/workflows/test-package.yml/badge.svg)](https://github.com/atst1996/Liberfy.SocialApis/actions/workflows/test-package.yml)
+[![Publish](https://github.com/atst1996/Liberfy.SocialApis/actions/workflows/push-package.yml/badge.svg)](https://github.com/atst1996/Liberfy.SocialApis/actions/workflows/push-package.yml)
 
 [Liberfy](https://github.com/atst1996/Liberfy)で複数のWebAPIへ接続することを目的に開発しています。  
 
