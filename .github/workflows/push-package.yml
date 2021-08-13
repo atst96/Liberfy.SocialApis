@@ -27,4 +27,4 @@ jobs:
     - name: Create package
       run: dotnet pack --configuration Release SocialApis
     - name: Publish package
-      run: dotnet nuget push SocialApis/bin/Release/SocialApis.*.nupkg
+      run: dotnet nuget push SocialApis/bin/Release/SocialApis.*.nupkg -k $NUGET_AUTH_TOKEN
