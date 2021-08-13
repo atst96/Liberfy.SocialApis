@@ -3,7 +3,7 @@ name: Publish
 on:
   push:
     tags:
-      - 'v*'
+    - "v*"
 
 jobs:
   build:
@@ -28,3 +28,5 @@ jobs:
       run: dotnet pack --configuration Release SocialApis
     - name: Publish package
       run: dotnet nuget push SocialApis/bin/Release/SocialApis.*.nupkg -k $NUGET_AUTH_TOKEN
+      env:
+        NUGET_AUTH_TOKEN: ${{ secrets.NUGET_PUSH_KEY }}
