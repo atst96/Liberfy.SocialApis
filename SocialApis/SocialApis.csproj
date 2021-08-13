@@ -14,8 +14,9 @@
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
     <Authors>atst_96</Authors>
-    <Company>atst_96</Company>
-    <Version>0.0.1</Version>
+    <Company></Company>
+    <Version>0.0.2</Version>
+    <PackageLicenseFile>C:\Users\Shota\source\repos\Liberfy.SocialApis\LICENSE</PackageLicenseFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -34,6 +35,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Utf8Json" Version="1.3.7" />
