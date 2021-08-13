@@ -17,7 +17,6 @@ namespace SocialApis.Mastodon
         public Meta Original { get; private set; }
 
         [DataMember(Name = "length")]
-        [Utf8Json.JsonFormatter(typeof(Formatters.NullableValueFormatter<TimeSpan>))]
         public TimeSpan? Length { get; private set; }
 
         [DataMember(Name = "duration")]

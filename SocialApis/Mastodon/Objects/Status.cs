@@ -13,7 +13,7 @@ namespace SocialApis.Mastodon
     public class Status
     {
         [DataMember(Name = "id")]
-        [JsonFormatter(typeof(Formatters.StringToLongFormatter))]
+        [JsonFormatter(typeof(Formatters.StringLongFormatter))]
         public long Id { get; private set; }
 
         [DataMember(Name = "uri")]
@@ -26,11 +26,11 @@ namespace SocialApis.Mastodon
         public Account Account { get; private set; }
 
         [DataMember(Name = "in_reply_to_id")]
-        [JsonFormatter(typeof(Formatters.StringToNullableLongFormatter))]
+        [JsonFormatter(typeof(Formatters.StringLongFormatter))]
         public long? InReplyToId { get; private set; }
 
         [DataMember(Name = "in_reply_to_account_id")]
-        [JsonFormatter(typeof(Formatters.StringToNullableLongFormatter))]
+        [JsonFormatter(typeof(Formatters.StringLongFormatter))]
         public long? InReplyToAccountId { get; private set; }
 
         [DataMember(Name = "reblog")]

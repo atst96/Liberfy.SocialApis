@@ -1,18 +1,17 @@
 ﻿using System;
 using System.Globalization;
 using System.Runtime.CompilerServices;
-using SocialApis.Extensions;
 using Utf8Json;
 
 namespace SocialApis.Formatters
 {
     /// <summary>
-    /// <see cref="DateTimeOffset"/>のフォーマッタ
+    /// <see cref="DateTimeOffset"/>のフォーマッタ(ddd MMM dd HH:mm:ss +ffff yyyy)
     /// </summary>
     public class TwitterDateTimeFormatter : IJsonFormatter<DateTimeOffset>, IJsonFormatter<DateTimeOffset?>
     {
         /// <summary>
-        /// 日時書式
+        /// 書式
         /// </summary>
         private const string DateTimeFormat = "ddd MMM dd HH:mm:ss +ffff yyyy";
 
@@ -20,31 +19,44 @@ namespace SocialApis.Formatters
         private static DateTimeOffset Parse(string value)
             => DateTimeOffset.ParseExact(value, DateTimeFormat, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal);
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static string ToString(DateTimeOffset value)
             => value.ToString(DateTimeFormat, CultureInfo.InvariantCulture);
 
-        void IJsonFormatter<DateTimeOffset>.Serialize(ref JsonWriter writer, DateTimeOffset value, IJsonFormatterResolver formatterResolver)
-        {
-            formatterResolver.WriteValue(ref writer, ToString(value));
-        }
-
+        /// <summary>
+        /// 文字列を<see cref="DateTimeOffset"/>のデシリアライズする
+        /// </summary>
+        /// <param name="reader"></param>
+        /// <param name="formatterResolver"></param>
+        /// <returns></returns>
         DateTimeOffset IJsonFormatter<DateTimeOffset>.Deserialize(ref JsonReader reader, IJsonFormatterResolver formatterResolver)
-        {
-            return Parse(formatterResolver.ReadValue<string>(ref reader));
-        }
+            => Parse(reader.ReadString());
 
-        void IJsonFormatter<DateTimeOffset?>.Serialize(ref JsonWriter writer, DateTimeOffset? value, IJsonFormatterResolver formatterResolver)
-        {
-            var dateTime = value is null ? null : ToString(value.Value);
-
-            formatterResolver.WriteValue(ref writer, dateTime);
-        }
-
+        /// <summary>
+        /// 文字列を<see cref="DateTimeOffset?"/>のデシリアライズする
+        /// </summary>
+        /// <param name="reader"></param>
+        /// <param name="formatterResolver"></param>
+        /// <returns></returns>
         DateTimeOffset? IJsonFormatter<DateTimeOffset?>.Deserialize(ref JsonReader reader, IJsonFormatterResolver formatterResolver)
-        {
-            var value = formatterResolver.ReadValue<string>(ref reader);
+            => reader.ReadIsNull() ? default(DateTimeOffset?) : Parse(reader.ReadString());
 
-            return value is null ? (DateTimeOffset?)null : Parse(value);
-        }
+        /// <summary>
+        /// <see cref="DateTimeOffset"/>をJSONにシリアライズする
+        /// </summary>
+        /// <param name="writer"></param>
+        /// <param name="value"></param>
+        /// <param name="formatterResolver"></param>
+        void IJsonFormatter<DateTimeOffset>.Serialize(ref JsonWriter writer, DateTimeOffset value, IJsonFormatterResolver formatterResolver)
+            => writer.WriteString(ToString(value));
+
+        /// <summary>
+        /// <see cref="DateTimeOffset?"/>をJSONにシリアライズする
+        /// </summary>
+        /// <param name="writer"></param>
+        /// <param name="value"></param>
+        /// <param name="formatterResolver"></param>
+        void IJsonFormatter<DateTimeOffset?>.Serialize(ref JsonWriter writer, DateTimeOffset? value, IJsonFormatterResolver formatterResolver)
+            => writer.WriteString(value is null ? default : ToString(value.Value));
     }
 }
