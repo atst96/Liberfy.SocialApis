@@ -3,27 +3,24 @@ name: Test
 on:
   push:
     branches:
-      - 'master'
+      - master
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    permissions:
-      packages: write
-      contents: read
     steps:
     - uses: actions/checkout@v2
     - name: Setup dotnet
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: '5.0.x'
-    - name: Resolve dependencies
+    - name: Install dependencies
       run: dotnet restore
     - name: Run test
-      run: dotnet --logger trx --result-directory "TestResults"
-    - name: Upload test results
+      run: dotnet test --logger trx --results-directory "TestResult"
+    - name: Upload dotnet test results
       uses: actions/upload-artifact@v2
       with:
-        name: dotnet-results-net5
-        path: TestResults
+        name: dotnet-result
+        path: TestResult
       if: ${{ always() }}
