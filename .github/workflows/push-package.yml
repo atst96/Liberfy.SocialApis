@@ -28,7 +28,8 @@ jobs:
       run: actions/upload-artifact@v2
       with:
         name: dotnet-results-net5
-        path: Test-Results
+        path: TestResults
+      if: ${{ always() }}
     - name: Build package
       run: dotnet build --configuration Release SocialApis
     - name: Create package
