@@ -72,71 +72,93 @@ namespace SocialApis.Core
         }
 
         /// <summary>
+        /// 接続先を取得する
+        /// </summary>
+        /// <returns></returns>
+        protected abstract Uri GetConnectUri();
+
+        /// <summary>
         /// 接続を開始する
         /// </summary>
         /// <param name="token"></param>
         /// <returns></returns>
-        protected abstract Task<bool> TryConnect(CancellationToken token);
+        protected async Task<bool> TryConnect(CancellationToken token)
+        {
+            var wss = this.Connection;
+
+            try
+            {
+                await wss.ConnectAsync(this.GetConnectUri(), token).ConfigureAwait(false);
+            }
+            catch (TaskCanceledException tcex)
+            {
+                // TODO: LOG
+                return false;
+            }
+
+            return true;
+        }
 
         /// <summary>
         /// 受信処理を開始する
         /// </summary>
         /// <returns></returns>
-        private void StartPooling(CancellationToken cancellationToken)
+        private void StartPooling(CancellationToken cancellationToken) => Task.Run(async () =>
         {
-            var buffer = new Memory<byte>(new byte[BufferSize]);
+            var buffer = new byte[BufferSize].AsMemory();
             var wss = this.Connection;
 
-            Task.Run(async () =>
+            try
             {
-                try
+                while (this.Connection.State == WebSocketState.Open)
                 {
-                    while (this.Connection.State == WebSocketState.Open)
+                    cancellationToken.ThrowIfCancellationRequested();
+
+                    var dataCollection = new LinkedList<byte[]>();
+
+                    int dataLength = 0;
+                    bool endOfMessage = false;
+                    WebSocketMessageType messageType;
+                    do
                     {
-                        cancellationToken.ThrowIfCancellationRequested();
+                        var result = await wss.ReceiveAsync(buffer, cancellationToken).ConfigureAwait(false);
 
-                        var dataCollection = new LinkedList<byte[]>();
-                        int destLength = 0;
-
-                        ValueWebSocketReceiveResult result;
-                        do
+                        if (result.MessageType == WebSocketMessageType.Close)
                         {
-                            result = await wss.ReceiveAsync(buffer, cancellationToken).ConfigureAwait(false);
-
-                            if (result.MessageType == WebSocketMessageType.Close)
-                            {
-                                await this.Close().ConfigureAwait(false);
-                                return;
-                            }
-
-                            int dataCount = result.Count;
-                            dataCollection.AddLast(ToArray(buffer, dataCount));
-                            destLength += dataCount;
+                            await this.Close().ConfigureAwait(false);
+                            return;
                         }
-                        while (!result.EndOfMessage);
 
-                        cancellationToken.ThrowIfCancellationRequested();
+                        int dataCount = result.Count;
+                        dataCollection.AddLast(buffer[0..dataCount].ToArray());
+                        dataLength += dataCount;
 
-                        byte[] dest = ConcatBytes(dataCollection, destLength);
+                        messageType = result.MessageType;
+                        endOfMessage = result.EndOfMessage;
+                    }
+                    while (!endOfMessage);
 
-                        switch (result.MessageType)
-                        {
-                            case WebSocketMessageType.Text:
-                                this.OnReceiveText(dest);
-                                break;
-                            case WebSocketMessageType.Binary:
-                                this.OnReceiveBinary(dest);
-                                break;
-                        }
+                    cancellationToken.ThrowIfCancellationRequested();
+
+                    var dest = ConcatBytes(dataCollection, dataLength);
+
+                    switch (messageType)
+                    {
+                        case WebSocketMessageType.Text:
+                            this.OnReceiveText(dest);
+                            break;
+                        case WebSocketMessageType.Binary:
+                            this.OnReceiveBinary(dest);
+                            break;
                     }
                 }
-                catch (TaskCanceledException tcex)
-                {
-                    // TODO: LOG
-                    await this.Close().ConfigureAwait(false);
-                }
-            });
-        }
+            }
+            catch (TaskCanceledException tcex)
+            {
+                // TODO: LOG
+                await this.Close().ConfigureAwait(false);
+            }
+        });
 
         /// <summary>
         /// 接続を終了する。
@@ -144,21 +166,21 @@ namespace SocialApis.Core
         /// <returns></returns>
         public async Task Close()
         {
-            var wss = this.Connection;
-            var sem = this._semaphore;
+            var connection = this.Connection;
+            var waltHandler = this._semaphore;
 
-            await sem.WaitAsync().ConfigureAwait(false);
+            await waltHandler.WaitAsync().ConfigureAwait(false);
             if (!this.IsConnecting)
             {
                 return;
             }
 
-            await wss.CloseAsync(WebSocketCloseStatus.Empty, string.Empty, CancellationToken.None)
+            await connection.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None)
                 .ConfigureAwait(false);
 
             this.IsConnecting = false;
 
-            sem.Release();
+            waltHandler.Release();
 
             this.OnClosed();
         }
@@ -190,47 +212,23 @@ namespace SocialApis.Core
         /// 複数のバイト配列を結合する。
         /// </summary>
         /// <param name="dataCollection">バイト配列</param>
-        /// <param name="arrayLength">コピー先配列のバイト数</param>
+        /// <param name="dataCount">コピー先配列のバイト数</param>
         /// <returns></returns>
-        private static byte[] ConcatBytes(IReadOnlyCollection<byte[]> dataCollection, int arrayLength)
+        private static byte[] ConcatBytes(LinkedList<byte[]> dataCollection, int dataCount)
         {
-            byte[] dest = new byte[arrayLength];
+            byte[] dest = new byte[dataCount];
             int offset = 0;
 
             foreach (var src in dataCollection)
             {
-                Buffer.BlockCopy(src, 0, dest, offset, src.Length);
-                offset += src.Length;
+                int length = src.Length;
+
+                Buffer.BlockCopy(src, 0, dest, offset, length);
+
+                offset += length;
             }
 
             return dest;
-        }
-
-        /// <summary>
-        /// <see cref="Memory{T}"/>から配列をコピーする。
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="data">コピー元データ</param>
-        /// <param name="dataLength">コピーするデータ数</param>
-        /// <returns></returns>
-        private static T[] ToArray<T>(Memory<T> data, int dataLength)
-        {
-            if (data.Length < dataLength)
-            {
-                throw new ArgumentOutOfRangeException(nameof(dataLength));
-            }
-
-            if (dataLength == 0)
-            {
-                return Array.Empty<T>();
-            }
-
-            if (data.Length == dataLength)
-            {
-                return data.ToArray();
-            }
-
-            return data[0..dataLength].ToArray();
         }
 
         /// <summary>

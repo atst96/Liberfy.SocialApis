@@ -30,7 +30,7 @@ namespace SocialApis.Mastodon
         /// WebSocket通信のURLを取得する。
         /// </summary>
         /// <returns></returns>
-        private Uri GetWebSocketUri()
+        protected override Uri GetConnectUri()
         {
             var api = this._api;
 
@@ -55,29 +55,6 @@ namespace SocialApis.Mastodon
 
             var url = $"wss://{ hostName }/api/v1/streaming?{ Query.JoinParametersWithAmpersand(parameters) }";
             return new Uri(url);
-        }
-
-        /// <summary>
-        /// 接続を試行する。
-        /// </summary>
-        /// <param name="cacnellationToken"></param>
-        /// <returns></returns>
-        protected override async Task<bool> TryConnect(CancellationToken cacnellationToken)
-        {
-            var wss = this.Connection;
-
-            try
-            {
-                await wss.ConnectAsync(this.GetWebSocketUri(), cacnellationToken)
-                    .ConfigureAwait(false);
-            }
-            catch (TaskCanceledException tcex)
-            {
-                // TODO: LOG
-                return false;
-            }
-
-            return true;
         }
 
         /// <summary>
